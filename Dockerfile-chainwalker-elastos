@@ -1,0 +1,13 @@
+# Chainwalkers Elastos
+
+FROM node:10
+
+LABEL maintainer="clarenceliu"
+
+# get_height.sh
+
+
+
+# build env
+ENV ELASTOS_RPC="127.0.0.1"
+ENV ELASTOS_RPC_PORT="20336"
