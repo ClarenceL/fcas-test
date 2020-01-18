@@ -22,4 +22,4 @@ ALL_BLOCKS=$(printf ",%s" "${BLOCKS[@]}")
 ALL_BLOCKS=${ALL_BLOCKS:1}
 
 # we are wrapping the objects with [ ] and piping to jq
-echo "[$ALL_BLOCKS]" | jq '[ .[] | {hash, blockHeight: .height, blockTime: .time, transactions: [.tx | .[] | {txid, type, vin, vout}]}]'
+echo "[$ALL_BLOCKS]" | jq '.'
