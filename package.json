@@ -1,0 +1,42 @@
+{
+  "name": "chainwalkers-elastos-bitcoin",
+  "version": "0.0.1",
+  "description": "Chainwalkers Elastos Mainchain walker",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/typescript/bin/tsc && node_modules/mocha/bin/mocha ./test/index.js --timeout 15000 --bail --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlipsideCrypto/chainwalkers-elastos-bitcoin.git"
+  },
+  "keywords": [
+    "elastos",
+    "bitcoin",
+    "flipsidecrypto",
+    "fcas"
+  ],
+  "author": "ClarenceL",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FlipsideCrypto/chainwalkers-elastos-bitcoin/issues"
+  },
+  "homepage": "https://github.com/FlipsideCrypto/chainwalkers-elastos-bitcoin#readme",
+  "dependencies": {
+    "bignumber.js": "^9.0.0",
+    "dotenv": "^4.0.0",
+    "lodash": "^4.17.15",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.5.0",
+    "@types/node-fetch": "^2.5.4",
+    "chai": "^4.1.0",
+    "faker": "^4.1.0",
+    "mocha": "*",
+    "require-directory": "2.1.1",
+    "should": "*",
+    "sinon": "^1.17.6",
+    "typescript": "^3.7.5"
+  }
+}

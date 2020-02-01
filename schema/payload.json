@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "coinbasedata": {
+          "type": "string",
+          "description": "for a coinbase transaction typically used to add the miner name"
+        },
+        "blockheight": {
+          "type": "integer",
+          "description": "Used for sidechain payload (payload_version = 0), the blockheight on the sidechain"
+        },
+        "sidechain_genesis_hash": {
+          "type": "string",
+          "description": "genesis hash of the sidechain, used to determine which sidechain"
+        },
+        "sidechain_block_hash": {
+          "type": "string",
+          "description": "hash of the corresponding block on the sidechain"
+        },
+        "signature": {
+          "type": "string",
+          "description": "for a sidechain transfer, this is the signature of the node that handled the transfer."
+        },
+        "sidechain_addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "the sidechain addresses"
+        },
+        "sidechain_output_indexes": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "integerindex of the vout that sent the value to the crosschain address"
+        },
+        "sidechain_output_values": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "For ETH sidechain, this is the value denominated in Gwei"
+        }
+      }
+    }
+  }
+}

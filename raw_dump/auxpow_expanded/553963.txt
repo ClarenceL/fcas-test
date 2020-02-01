@@ -1,0 +1,45 @@
+01000000 - version LE
+01 - # of txin
+0000000000000000000000000000000000000000000000000000000000000000 - BtcTxIn.PreviousOutPoint.Hash
+ffffffff - BtcTxIn.PreviousOutPoint.Index
+55 - length (hex) of Signature Script (transaction input signature script)
+03e159091c4d696e656420627920416e74506f6f6c313333ef00f10120ab8d32cffabe6d6db7ae5e7465b297f448b6c5484686aa49608562c40371c55a81486a6192839b4c0400000000000000fc530000721b1900  - Signature Script
+ffffffff - Sequence
+03 - # of txout
+2969b54b00000000 - Value LE
+19 - length (hex) of PkScript (transaction output public key script)
+76a91411dbe48cc6b617f9c6adaf4d9ed5f625b1c7cb5988ac - PkScript
+0000000000000000 - Value LE
+26 - length (hex) of PkScript (transaction output public key script)
+6a24aa21a9ed49757045b0b063e6ef52c7ae032cb15c7dfef68cdfefd552958eccad53d75d72 - PkScript
+0000000000000000 - Value LE
+26 - length (hex) of PkScript (transaction output public key script)
+6a24b9e11b6da333dc93c98cca9dd98ae1aa9dc5bfeadc091e71f7e6d0d26c280990f7ab143a - PkScript
+00000000 - LockTime
+53188ed5202110af72f94a205900815f5b98232608a34f000000000000000000 - Parent Hash LE
+0c - # of coinbase merkle - ParCoinbaseMerkle
+de2e345893d202a17f7131fcac6966aa984d960d7b735876cefd52b3724d0f41 - merkle 1
+daa654b5018120933a152ee923adaedb350408f37dd5cc6b992e287db40a511b - merkle 2
+6fb378b4d62f9e1efb81a9427e3a4d7ba13de0935577f086a7970c73be52512f - merkle 3
+ce15e9025b6096bb65bd8967760d1aa70f688930c0d7af20f78258d3909a83be - merkle 4
+dd335cff3d543f816e5a423ea23893f4f54717b6e95f0dc1466ee6080ca2b8c7 - merkle 5
+11751d714bbb1731c1ff9ae1daa438f87c4008feca72edf8a0492da2e9056fe0 - merkle 6
+e55fb23b4c7286f2b19861aea5312ad48bd007856c268542421f61ab224e8978 - merkle 7
+2d1036afca4d68c6b8b59488272294e0010e6e3d3d679d4d618302d55046025c - merkle 8
+5835b75f9aff9e846a2e450983e2fe3147e3f3f4095ca1a8ecfd8ce89ef39b6f - merkle 9
+7575dcfa72af5071c510e5a70c0e313c4ebeee198d3a30da9a8d66e75fc2493e - merkle 10
+a04390da48c65ff1201c996906cf5d72f7a586dbd06323d8f3c210ab6a5e4967 - merkle 11
+444ff6fa947a916f43409887ac3f88751bfa1e6b8744a2eb25f762bf99282636 - merkle 12
+00000000 - ParMerkleIndex LE
+02 - # of merkle branches
+9c9503fc92733604b93471f87147ccc87aae598f1ea3d71c9db40b8e8a96f84a - merkle 1
+c2c25db0c08244d3eba88658a8fdfa01ecf1a5d52c5e787bcd95af626e02bfc2 - merkle 2
+02000000 - AuxMerkleIndex LE
+00e0ff7f - BtcHeader.Version
+a1b2116f917932c2750a130a7f0d87aad07b4a7dece200000000000000000000 - BtcHeader.PreviousHash
+9e94b5bc5f56eb1d0efeb99cc9214a2277668f13a6df5869307e8bb754a229d0 - BtcHeader.MerkleRoot
+1e181e5e - Timestamp
+f2651417 - Bits
+91358a14 - Nonce
+
+

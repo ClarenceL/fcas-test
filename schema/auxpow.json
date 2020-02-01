@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "inputs": {
+      "type": "object",
+      "description": "We generally follow the Namecoin merge mining spec https://en.bitcoin.it/wiki/Merged_mining_specification and our ChainID = 1224",
+      "properties": {
+        "parent_coinbase_tx": {
+          "type": "object",
+          "description": "additional coinbase transaction that's inserted into the parent block's coinbase transaction",
+          "properties": {
+            "version": {
+              "type": "integer",
+              "description": "version - 4 bytes"
+            },
+            "txin_count": {
+              "type": "integer",
+              "description": "number of input transactions"
+            },
+            "txin": {
+              "type": "array",
+              "items": {
+                "properties": {
+                  "prev_out_point_hash": {
+                    "type": "string",
+                    "description": "hash of previous output to this input"
+                  },
+                  "prev_out_point_index": {
+                    "type": "integer",
+                    "description": "index of previous output to this input (4 bytes)"
+                  },
+                  "sig_script_len": {
+                    "type": "number",
+                    "description": "length of sig script in bytes, this is read as a hex and converted to an int"
+                  },
+                  "sig_script": {
+                    "type": "string",
+                    "description": "Signature Script"
+                  },
+                  "sequence": {
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "txout_count": {
+              "type": "integer",
+              "description": "number of output transactions"
+            },
+            "txout": {
+              "type": "array",
+              "items": {
+                "properties": {
+                  "value": {
+                    "type": "number",
+                    "description": "transaction value as ELA"
+                  },
+                  "pk_script_len": {
+                    "type": "number",
+                    "description": "transaction output Public Key script"
+                  },
+                  "pk_script": {
+                    "type": "string",
+                    "description": "public key script"
+                  }
+                }
+              }
+            },
+            "lock_time": {
+              "type": "number"
+            }
+          }
+        },
+        "parent_hash": {
+          "type": "string",
+          "description": "hash of the Parent Block header, this is the parent blockchain's block hash. Which may not be included in the parent blockchain if its difficulty is not met, but it still may be valid for this aux chain"
+        },
+        "parent_coinbase_merkle_count": {
+          "type": "number",
+          "description": "number of merkle hashes on the parent blockchain to reach the parent block's merkle root"
+        },
+        "parent_coinbase_merkle": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The merkle branch linking the coinbase_txn to the parent block's merkle root"
+        },
+        "parent_coinbase_merkle_bitmask": {
+          "type": "number",
+          "description": "merkle bitmask as integer - 32 bits, where 0 = right side, 1 = left side"
+        },
+        "aux_merkle_branch" : {
+          "type": "object",
+          "description": "The aux merkle branch is used when a miner has multiple auxiliary chains, this merkle branch allows us to prove our aux chain is linked to the others via SPV proof",
+          "properties": {
+            "branch_count": {
+            "type": "integer",
+            "description": "Number of links in merkle branch"
+            },
+            "merkle_branch": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "merkle hashes of branch"
+            },
+            "bitmask": {
+              "type": "integer",
+              "description": "branch sides bitmask as integer - 32 bits, where 0 = right side, 1 = left side"
+            }
+          }
+        },
+        "parent_block_header": {
+          "type": "object",
+          "description": "standard 80 byte BTC block header, if only the aux chain difficulty is reached we use the prev block hash to prove the work was done after that parent block",
+          "properties": {
+            "version": {
+              "type": "number",
+              "description": "btc version"
+            },
+            "prev_block_hash": {
+              "type": "string",
+              "description": "btc prev block hash"
+            },
+            "merkle_root": {
+              "type": "string",
+              "description": "btc block merkle root hash"
+            },
+            "time": {
+              "type": "string",
+              "description": "block time - UTC",
+              "example": "YYYY-MM-DDTHH:MM:SS"
+            },
+            "bits": {
+              "type": "number",
+              "description": "difficulty bits"
+            },
+            "nonce": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  }
+}
