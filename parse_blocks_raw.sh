@@ -1,4 +1,6 @@
 
+export $(grep -v '^#' .env | xargs)
+
 # requires jq: "sudo apt-get install jq"
 
 BLOCKS=()

@@ -13,6 +13,8 @@
 
 export $(grep -v '^#' .env | xargs)
 
+TIMESTAMP=`date +%s`
+
 # requires jq: "sudo apt-get install jq"
 
 BLOCKS=()
@@ -38,6 +40,11 @@ ALL_BLOCKS=${ALL_BLOCKS:1}
 # we are wrapping the objects with [ ] and piping to jq
 BLOCK_JSON=$(echo "[$ALL_BLOCKS]" | jq -c '.')
 
-./node_modules/typescript/bin/tsc
+# write to a JSON file because it may be too large
+echo "$BLOCK_JSON" >> "./temp/$TIMESTAMP.json"
 
-~/.nvm/versions/node/v12.14.1/bin/node ./dist/app.js "$BLOCK_JSON"
+# use .. because app.js is running from dist
+node ./dist/app.js "./temp/$TIMESTAMP.json"
+
+# delete this when we're done
+rm "./temp/$TIMESTAMP.json"

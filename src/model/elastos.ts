@@ -95,7 +95,6 @@ export default class ElastosBlock implements Block {
   auxpow: object
   miner_info: string
 
-
   /**
    * Only direct assignments from block to the private variables here
    * @param block
@@ -138,6 +137,8 @@ export default class ElastosBlock implements Block {
 
     // process auxpow
     this.auxpow = new AuxPoW(this.auxpow_raw).output()
+
+    this.transactions = []
   }
 
   static async getInputOutput(vin) {
@@ -187,18 +188,35 @@ export default class ElastosBlock implements Block {
 
   /**
    * This is async because each transaction "input" needs to fetch the previous output
+   *
+   * NOTE: Do not process too many transactions in parallel and/or use Promise.all, we had EMFILE issues previously
+   *
    * TODO: could use a bit of cleanup
    */
   async output(): Promise<Block> {
 
     // process transactions
-    let transactionIndex = 0
+    for (let transactionIndex = 0; transactionIndex < this.tx.length; transactionIndex++) {
 
-    const transactionPromises = this.tx.map(async (t) => {
+      const t = this.tx[transactionIndex]
 
       const type = t.type.toString(16).length < 2 ? '0' + t.type.toString(16) : t.type.toString(16)
 
       const typeDescription = typeDesc[type]
+
+      const inputs = []
+
+      // this needs to call out to the RPC port to get the outputs that led to each input
+      for (let inputIndex = 0; inputIndex < t.vin; inputIndex++) {
+        const vin = t.vin[inputIndex]
+        inputs.push({
+          txid: vin.txid,
+          txid_as_number: new BigNumber(vin.txid, 16).toFixed(),
+          output_index: vin.vout,
+          prev_output: await ElastosBlock.getInputOutput(vin),
+          sequence: vin.sequence
+        })
+      }
 
       const transaction: Transaction = {
         coinbase: t.type === 0,
@@ -217,15 +235,7 @@ export default class ElastosBlock implements Block {
         time: new Date(this.time).toISOString(),
 
         // this needs to call out to the RPC port to get the outputs that led to each input
-        inputs: await Promise.all(t.vin.map(async (vin) => {
-          return {
-            txid: vin.txid,
-            txid_as_number: new BigNumber(vin.txid, 16).toFixed(),
-            output_index: vin.vout,
-            prev_output: await ElastosBlock.getInputOutput(vin),
-            sequence: vin.sequence
-          }
-        })),
+        inputs: inputs,
 
         outputs: t.vout.map((vout) => ({
           address: vout.address,
@@ -247,14 +257,8 @@ export default class ElastosBlock implements Block {
         transaction.programs = t.programs
       }
 
-      transactionIndex++
-
-      return transaction
-    })
-
-
-    this.transactions = await Promise.all(transactionPromises) as [Transaction]
-
+      this.transactions.push(transaction)
+    }
 
     return {
 
