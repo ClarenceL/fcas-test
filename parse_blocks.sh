@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Parse an array of blocks and write parsed json to stdout.
 #
 #
@@ -43,7 +45,6 @@ BLOCK_JSON=$(echo "[$ALL_BLOCKS]" | jq -c '.')
 # write to a JSON file because it may be too large
 echo "$BLOCK_JSON" >> "./temp/$TIMESTAMP.json"
 
-# use .. because app.js is running from dist
 node ./dist/app.js "./temp/$TIMESTAMP.json"
 
 # delete this when we're done

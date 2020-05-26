@@ -32,37 +32,41 @@ const typeDesc = {
   '26': 'CRCProposalReview',
   '27': 'CRCProposalTracking',
   '28': 'CRCAppropriation',
-  '29': 'CRCProposalWithdraw'
+  '29': 'CRCProposalWithdraw',
 }
 
 export interface Block {
-  bits: number,
-  chain_work: string,
-  chain_work_as_number: number,
-  confirmations: number,
-  difficulty: number,
-  hash: string,
-  hash_as_number: string,
-  height: number,
-  weight: number,
-  merkle_root: string,
-  next_block_hash: string,
-  next_block_hash_as_number: string,
-  nonce: number,
-  prev_block_hash: string,
-  prev_block_hash_as_number: string,
-  size: number,
-  time: string,
-  median_time: string,
-  transaction_count: number,
-  transactions: Array<Transaction>,
-  version: number,
-  version_hex: string,
-  auxpow: object,
+  bits: number
+  chain_work: string
+  chain_work_as_number: number
+  confirmations: number
+  difficulty: number
+  hash: string
+  hash_as_number: string
+  height: number
+  weight: number
+  merkle_root: string
+  next_block_hash: string
+  next_block_hash_as_number: string
+  nonce: number
+  prev_block_hash: string
+  prev_block_hash_as_number: string
+  size: number
+  time: string
+  median_time: string
+  transaction_count: number
+  transactions: Array<Transaction>
+  version: number
+  version_hex: string
+  auxpow: object
 }
 
+/**
+ * Not really a model only, it also knows how to fetch the
+ * transaction inputs for an output, this is initated misleadingly in the
+ * output function
+ */
 export default class ElastosBlock implements Block {
-
   // raw fields - not outputted
   tx: Array<any>
   time_ms: number
@@ -100,7 +104,6 @@ export default class ElastosBlock implements Block {
    * @param block
    */
   constructor(block) {
-
     this.hash = block.hash
     this.confirmations = block.confirmations
     this.size = block.size
@@ -125,15 +128,20 @@ export default class ElastosBlock implements Block {
     this.init()
   }
 
-  async init() {
-
+  init() {
     this.hash_as_number = new BigNumber(this.hash, 16).toFixed()
     this.time = new Date(this.time_ms).toISOString()
     this.median_time = new Date(this.median_time_ms).toISOString()
     this.transaction_count = this.tx.length
     this.chain_work_as_number = parseInt(this.chain_work, 16)
-    this.next_block_hash_as_number = new BigNumber(this.next_block_hash, 16).toFixed()
-    this.prev_block_hash_as_number = new BigNumber(this.prev_block_hash, 16).toFixed()
+    this.next_block_hash_as_number = new BigNumber(
+      this.next_block_hash,
+      16
+    ).toFixed()
+    this.prev_block_hash_as_number = new BigNumber(
+      this.prev_block_hash,
+      16
+    ).toFixed()
 
     // process auxpow
     this.auxpow = new AuxPoW(this.auxpow_raw).output()
@@ -142,48 +150,53 @@ export default class ElastosBlock implements Block {
   }
 
   static async getInputOutput(vin) {
-    return fetch(`http://${process.env.ELASTOS_RPC}:${process.env.ELASTOS_RPC_PORT}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        method: 'getrawtransaction',
-        params: {
-          txid: vin.txid,
-          verbose: true
-        }
+    return fetch(
+      `http://${process.env.ELASTOS_RPC}:${process.env.ELASTOS_RPC_PORT}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          method: 'getrawtransaction',
+          params: {
+            txid: vin.txid,
+            verbose: true,
+          },
+        }),
+      }
+    )
+      .then((res) => {
+        return res.json()
       })
-    }).then((res) => {
-      return res.json()
-    }).then((tx) => {
-      // this is the output that is the input to this transaction,
-      // however the previous output may have multiple outputs, therefore
-      // we want to match the vout with the output's "n" value
-      if (tx.error) {
-        return null
-      }
-
-      let matchingOutput
-      for (let vout of tx.result.vout) {
-        if (vin.vout === vout.n) {
-          matchingOutput = {
-            address: vout.address,
-            value: vout.value,
-            value_denomination: 'ELA',
-            index: vout.n,
-            asset_id: vout.assetid,
-            type: vout.type,
-            output_lock: vout.outputlock,
-            payload: vout.payload
-          }
-          break
+      .then((tx) => {
+        // this is the output that is the input to this transaction,
+        // however the previous output may have multiple outputs, therefore
+        // we want to match the vout with the output's "n" value
+        if (tx.error) {
+          return null
         }
-      }
 
-      return matchingOutput
-    })
+        let matchingOutput
+        for (let vout of tx.result.vout) {
+          if (vin.vout === vout.n) {
+            matchingOutput = {
+              address: vout.address,
+              value: vout.value,
+              value_denomination: 'ELA',
+              index: vout.n,
+              asset_id: vout.assetid,
+              type: vout.type,
+              output_lock: vout.outputlock,
+              payload: vout.payload,
+            }
+            break
+          }
+        }
+
+        return matchingOutput
+      })
   }
 
   /**
@@ -194,13 +207,18 @@ export default class ElastosBlock implements Block {
    * TODO: could use a bit of cleanup
    */
   async output(): Promise<Block> {
-
     // process transactions
-    for (let transactionIndex = 0; transactionIndex < this.tx.length; transactionIndex++) {
-
+    for (
+      let transactionIndex = 0;
+      transactionIndex < this.tx.length;
+      transactionIndex++
+    ) {
       const t = this.tx[transactionIndex]
 
-      const type = t.type.toString(16).length < 2 ? '0' + t.type.toString(16) : t.type.toString(16)
+      const type =
+        t.type.toString(16).length < 2
+          ? '0' + t.type.toString(16)
+          : t.type.toString(16)
 
       const typeDescription = typeDesc[type]
 
@@ -214,7 +232,7 @@ export default class ElastosBlock implements Block {
           txid_as_number: new BigNumber(vin.txid, 16).toFixed(),
           output_index: vin.vout,
           prev_output: await ElastosBlock.getInputOutput(vin),
-          sequence: vin.sequence
+          sequence: vin.sequence,
         })
       }
 
@@ -245,8 +263,8 @@ export default class ElastosBlock implements Block {
           asset_id: vout.assetid,
           type: vout.type,
           output_lock: vout.outputlock,
-          payload: vout.payload
-        }))
+          payload: vout.payload,
+        })),
       }
 
       if (t.attributes && t.attributes.length) {
@@ -261,7 +279,6 @@ export default class ElastosBlock implements Block {
     }
 
     return {
-
       hash: this.hash,
       confirmations: this.confirmations,
       size: this.size,
@@ -285,8 +302,7 @@ export default class ElastosBlock implements Block {
       transaction_count: this.transaction_count,
 
       nonce: this.nonce,
-      auxpow: this.auxpow
-
+      auxpow: this.auxpow,
     } as Block
   }
 }

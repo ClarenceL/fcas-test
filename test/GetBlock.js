@@ -1,5 +1,3 @@
-
-
 require('dotenv').config()
 const _ = require('lodash')
 const chai = require('chai')
@@ -12,19 +10,20 @@ const exec = require('child_process').exec
 console.log(__dirname)
 
 describe('Tests for Parse Blocks', () => {
-
   let block_553963, block_553991
 
   before((done) => {
-
-    block_553963 = JSON.parse(fs.readFileSync(__dirname + '/data/blocks/553963.json').toString())
-    block_553991 = JSON.parse(fs.readFileSync(__dirname + '/data/blocks/553991.json').toString())
+    block_553963 = JSON.parse(
+      fs.readFileSync(__dirname + '/data/blocks/553963.json').toString()
+    )
+    block_553991 = JSON.parse(
+      fs.readFileSync(__dirname + '/data/blocks/553991.json').toString()
+    )
 
     done()
   })
 
   it('Should return a JSON struct for block 553991', (done) => {
-
     const shGetHeight = exec('sh parse_blocks.sh 553991')
 
     let shGetHeightData = ''
@@ -34,7 +33,6 @@ describe('Tests for Parse Blocks', () => {
     })
 
     shGetHeight.stdout.on('close', () => {
-
       try {
         const result = JSON.parse(shGetHeightData)
 
@@ -72,11 +70,9 @@ describe('Tests for Parse Blocks', () => {
       } catch (err) {
         done(err)
       }
-
     })
 
-    shGetHeight.stderr.on('data', (err)=>{
-
+    shGetHeight.stderr.on('data', (err) => {
       if (err.match(/readBigUInt64LE/).length) {
         assert.fail('This requires Node > 12')
         done()
@@ -86,11 +82,9 @@ describe('Tests for Parse Blocks', () => {
       assert.fail('Failed on bash call')
       done(err)
     })
-
   })
 
   it('Should return multiple JSON structs for block 553963 and 553991', (done) => {
-
     const shGetHeight = exec('sh parse_blocks.sh 553963 553991')
 
     let shGetHeightData = ''
@@ -100,7 +94,6 @@ describe('Tests for Parse Blocks', () => {
     })
 
     shGetHeight.stdout.on('close', () => {
-
       try {
         const result = JSON.parse(shGetHeightData)
 
@@ -113,11 +106,9 @@ describe('Tests for Parse Blocks', () => {
       } catch (err) {
         done(err)
       }
-
     })
 
-    shGetHeight.stderr.on('data', (err)=>{
-
+    shGetHeight.stderr.on('data', (err) => {
       if (err.match(/readBigUInt64LE/).length) {
         assert.fail('This requires Node > 12')
         done()
@@ -127,6 +118,5 @@ describe('Tests for Parse Blocks', () => {
       assert.fail('Failed on bash call')
       done(err)
     })
-
   })
 })

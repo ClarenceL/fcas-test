@@ -1,8 +1,6 @@
-
 import * as crypto from 'crypto'
 
 export class AuxPoW {
-
   parent_coinbase_tx: {
     version: number
     txin_count: number
@@ -54,13 +52,12 @@ export class AuxPoW {
    * @param auxPowHexStr
    */
   constructor(auxPowHexStr: string) {
-
     this.parent_coinbase_tx = {
       txin: [],
-      txout: []
+      txout: [],
     } as any
     this.aux_merkle_branch = {
-      merkle_branch: []
+      merkle_branch: [],
     } as any
     this.parent_coinbase_merkle = []
     this.parent_block_header = {} as any
@@ -77,11 +74,11 @@ export class AuxPoW {
   }
 
   sha256(buf) {
-    return crypto.createHash('sha256').update(buf).digest();
+    return crypto.createHash('sha256').update(buf).digest()
   }
 
   sha256sha256(buf) {
-    return this.sha256(this.sha256(buf));
+    return this.sha256(this.sha256(buf))
   }
 
   /**
@@ -89,7 +86,6 @@ export class AuxPoW {
    * therefore we dynamically parse it with a buffer
    */
   processBuffer() {
-
     this.parent_coinbase_tx.version = this.readBufUintLE(32)
 
     this.parent_coinbase_tx.txin_count = this.readVarUint()
@@ -129,9 +125,7 @@ export class AuxPoW {
     this.parent_coinbase_merkle_count = this.readVarUint()
 
     for (let i = 0; i < this.parent_coinbase_merkle_count; i++) {
-      this.parent_coinbase_merkle.push(
-        this.readBufHex(256)
-      )
+      this.parent_coinbase_merkle.push(this.readBufHex(256))
     }
 
     this.parent_coinbase_merkle_bitmask = this.readBufUintLE(32)
@@ -139,9 +133,7 @@ export class AuxPoW {
     this.aux_merkle_branch.branch_count = this.readVarUint()
 
     for (let i = 0; i < this.aux_merkle_branch.branch_count; i++) {
-      this.aux_merkle_branch.merkle_branch.push(
-        this.readBufHex(256)
-      )
+      this.aux_merkle_branch.merkle_branch.push(this.readBufHex(256))
     }
 
     this.parent_coinbase_merkle_bitmask = this.readBufUintLE(32)
@@ -152,7 +144,9 @@ export class AuxPoW {
     this.parent_block_header.version = this.readBufUintLE(32)
     this.parent_block_header.prev_block_hash = this.readBufHex(256)
     this.parent_block_header.merkle_root = this.readBufHex(256)
-    this.parent_block_header.time = new Date(this.readBufUintLE(32) * 1000).toISOString()
+    this.parent_block_header.time = new Date(
+      this.readBufUintLE(32) * 1000
+    ).toISOString()
     this.parent_block_header.bits = this.readBufUintLE(32)
     this.parent_block_header.nonce = this.readBufUintLE(32)
 
@@ -160,10 +154,9 @@ export class AuxPoW {
   }
 
   getBlockHash(btcHeaderStartPtr: number) {
-
     const newBuf = Buffer.alloc(80)
 
-    this.buf.copy(newBuf, 0, btcHeaderStartPtr, btcHeaderStartPtr+80)
+    this.buf.copy(newBuf, 0, btcHeaderStartPtr, btcHeaderStartPtr + 80)
 
     // DEBUG this is the entire BTC block header
     // console.log(newBuf.toString('hex'))
@@ -172,16 +165,14 @@ export class AuxPoW {
   }
 
   /*
-  ************************************************************************
-  * Helpers for reading the buffer so I don't need to manage the pointer
-  ************************************************************************
+   ************************************************************************
+   * Helpers for reading the buffer so I don't need to manage the pointer
+   ************************************************************************
    */
   readVarUint() {
-
     const discriminant = this.readBufUintLE(8)
 
     switch (discriminant) {
-
       case 0xff:
         // read in 64 bits = 16 hex chars
         return this.readBufUintLE(64)
@@ -197,11 +188,9 @@ export class AuxPoW {
       default:
         return discriminant
     }
-
   }
 
   readBufUintLE(numBits: number) {
-
     let returnVal
 
     switch (numBits) {
@@ -243,7 +232,7 @@ export class AuxPoW {
     return newBuf.toString('hex')
   }
 
-  output(){
+  output() {
     return {
       parent_coinbase_tx: {
         version: this.parent_coinbase_tx.version,
@@ -251,7 +240,7 @@ export class AuxPoW {
         txin: this.parent_coinbase_tx.txin,
         txout_count: this.parent_coinbase_tx.txout_count,
         txout: this.parent_coinbase_tx.txout,
-        lock_time: this.parent_coinbase_tx.lock_time
+        lock_time: this.parent_coinbase_tx.lock_time,
       },
       parent_hash: this.parent_hash,
 
@@ -261,7 +250,7 @@ export class AuxPoW {
       aux_merkle_branch: {
         branch_count: this.aux_merkle_branch.branch_count,
         merkle_branch: this.aux_merkle_branch.merkle_branch,
-        bitmask: this.aux_merkle_branch.bitmask
+        bitmask: this.aux_merkle_branch.bitmask,
       },
       parent_block_header: {
         version: this.parent_block_header.version,
@@ -269,13 +258,11 @@ export class AuxPoW {
         merkle_root: this.parent_block_header.merkle_root,
         time: this.parent_block_header.time,
         bits: this.parent_block_header.bits,
-        nonce: this.parent_block_header.nonce
-      }
+        nonce: this.parent_block_header.nonce,
+      },
     }
   }
 }
-
-
 
 // test
 /*

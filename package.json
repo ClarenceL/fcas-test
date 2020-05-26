@@ -2,9 +2,10 @@
   "name": "chainwalkers-elastos-bitcoin",
   "version": "0.0.1",
   "description": "Chainwalkers Elastos Mainchain walker",
-  "main": "index.js",
   "scripts": {
-    "test": "./node_modules/typescript/bin/tsc && node_modules/mocha/bin/mocha ./test/index.js --timeout 15000 --bail --exit"
+    "tsc": "./node_modules/typescript/bin/tsc",
+    "build": "npm run tsc",
+    "test": "npm run tsc && node_modules/mocha/bin/mocha ./test/index.js --timeout 15000 --bail --exit"
   },
   "repository": {
     "type": "git",
@@ -34,10 +35,18 @@
     "@types/node-fetch": "^2.5.4",
     "chai": "^4.1.0",
     "faker": "^4.1.0",
+    "grunt": "^1.1.0",
+    "grunt-prettier": "^2.1.0",
+    "husky": "^4.2.5",
     "mocha": "*",
     "require-directory": "2.1.1",
     "should": "*",
     "sinon": "^1.17.6",
     "typescript": "^3.7.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "grunt prettier"
+    }
   }
 }
