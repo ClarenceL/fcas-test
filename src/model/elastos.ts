@@ -225,7 +225,7 @@ export default class ElastosBlock implements Block {
       const inputs = []
 
       // this needs to call out to the RPC port to get the outputs that led to each input
-      for (let inputIndex = 0; inputIndex < t.vin; inputIndex++) {
+      for (let inputIndex = 0; inputIndex < t.vin.length; inputIndex++) {
         const vin = t.vin[inputIndex]
         inputs.push({
           txid: vin.txid,
